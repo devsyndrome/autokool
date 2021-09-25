@@ -11,17 +11,17 @@
           <li class="nav-item dropdown">
             <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Dashboard</span></a>
             <ul class="dropdown-menu">
-              <li><a class="nav-link" href="#">Home</a></li>
-              <li><a class="nav-link" href="#">User</a></li>
+              <li><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+              <li><a class="nav-link" href="{{ url('user') }}">User</a></li>
             </ul>
           </li>
           <li class="menu-header">Estimator - SA</li>
-          <li ><a class="nav-link" href="blank.html"><i class="far fa-square"></i> <span>Estimasi</span></a></li>
+          <li ><a class="nav-link" href="{{ url('estimasi') }}"><i class="far fa-square"></i> <span>Estimasi</span></a></li>
           <li class="menu-header">Logistik</li>
-          <li ><a class="nav-link" href="blank.html"><i class="far fa-square"></i> <span>Logistik</span></a></li>
+          <li ><a class="nav-link" href="{{ url('logistik') }}"><i class="far fa-square"></i> <span>Logistik</span></a></li>
           <li class="menu-header">Penawaran - SA</li>
-          <li><a class="nav-link" href="credits.html"><i class="fas fa-pencil-ruler"></i> <span>Penawaran</span></a></li>
-          <li><a class="nav-link" href="credits.html"><i class="fas fa-pencil-ruler"></i> <span>Check SPK Asuransi</span></a></li>
+          <li><a class="nav-link" href="{{ url('penawaran') }}"><i class="fas fa-pencil-ruler"></i> <span>Penawaran</span></a></li>
+          <li><a class="nav-link" href="{{ url('spk-asuransi') }}"><i class="fas fa-pencil-ruler"></i> <span>Check SPK Asuransi</span></a></li>
         </ul>
 
         {{-- <div class="mt-4 mb-4 p-3 hide-sidebar-mini">

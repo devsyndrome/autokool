@@ -20,3 +20,9 @@ use Illuminate\Support\Facades\Auth;
 
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index']);
+Route::resource('user', '\App\Http\Controllers\UsersController');
+Route::resource('estimasi', 'EstimatesController');
+Route::resource('logistik', 'LogisticsController');
+Route::resource('penawaran', 'OffersController');
+Route::resource('spk-asuransi', 'InsurancesController');
