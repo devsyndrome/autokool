@@ -30,4 +30,4 @@ Route::resource('logistik', '\App\Http\Controllers\LogisticsController');
 Route::resource('penawaran', '\App\Http\Controllers\OffersController');
 Route::resource('spk-asuransi', '\App\Http\Controllers\InsurancesController');
 Route::resource('part', '\App\Http\Controllers\EstimatePartsController');
-Route::resource('service', '\App\Http\Controllers\EstimateServicesController');
+Route::resource('jasa', '\App\Http\Controllers\EstimateServicesController');

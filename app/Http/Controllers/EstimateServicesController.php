@@ -35,7 +35,33 @@ class EstimateServicesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $id = $request->id;
+        if (Estimate_services::where('id_services', '=', $id)->exists()) {
+            $post= Estimate_services::where('id_services', $id)->update([
+                'id_estimate' => $request->id_e,
+                'jasa' => $request->jasa,
+                'note' => $request->note,
+                'qty' => $request->qty,
+                'price_s' => $request->price_s,
+                'diskon_dpp_s' => 0,
+                'markup_s' => 0,
+                'price_asuransi_s' => 0,
+                'diskon_asuransi_s' => 0,
+            ]);
+        }else{
+            $post= Estimate_services::create([
+                'id_estimate' => $request->id_e,
+                'jasa' => $request->jasa,
+                'note' => $request->note,
+                'qty' => $request->qty,
+                'price_s' => $request->price_s,
+                'diskon_dpp_s' => 0,
+                'markup_s' => 0,
+                'price_asuransi_s' => 0,
+                'diskon_asuransi_s' => 0,
+            ]);
+        }
+    return response()->json($post);
     }
 
     /**
@@ -46,7 +72,7 @@ class EstimateServicesController extends Controller
      */
     public function show(Estimate_services $estimate_services)
     {
-        //
+        
     }
 
     /**
@@ -55,9 +81,11 @@ class EstimateServicesController extends Controller
      * @param  \App\Models\Estimate_services  $estimate_services
      * @return \Illuminate\Http\Response
      */
-    public function edit(Estimate_services $estimate_services)
+    public function edit($id)
     {
-        //
+        $where = array('id_services' => $id);
+        $post  = Estimate_services::where($where)->first();
+        return response()->json($post);
     }
 
     /**
@@ -78,8 +106,9 @@ class EstimateServicesController extends Controller
      * @param  \App\Models\Estimate_services  $estimate_services
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Estimate_services $estimate_services)
+    public function destroy($id)
     {
-        //
+        $post = Estimate_services::where('id_services',$id)->delete();
+        return response()->json($post);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estimate_parts;
+use App\Models\Estimate_services;
 use App\Models\Estimates;
 use Illuminate\Http\Request;
 
@@ -147,11 +148,25 @@ class EstimatesController extends Controller
         $estimates = Estimates::where('id',$id)->first();
         return view('part',compact('id','estimates'));
     }
-    public function jasa($id)
+    public function jasa(Request $request,$id)
     {
-        return response()->json($id);
+        if($request->ajax()){
+            $list_jasa = Estimate_services::select('*',Estimate_services::raw('(price_s * qty) AS subtotal'))->where('id_estimate',$id)->get();
+            return datatables()->of($list_jasa)
+            ->addColumn('action', function($data){
+                $button = '<a href="javascript:void(0) " data-toggle="tooltip"  data-id="'.$data->id_services.'" data-original-title="Edit" class="edit btn btn-outline-warning btn-sm edit-post"><i class="far fa-edit"></i></a>';
+                $button .= '&nbsp;&nbsp;';
+                $button .= '<button type="button" name="delete" id="'.$data->id_services.'" class="delete btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i></button>';     
+                return $button;
+            })
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        $estimates = Estimates::where('id',$id)->first();
+        return view('services',compact('id','estimates'));
     }
-    public function detail($id)
+    public function detail(Request $request,$id)
     {
         return response()->json($id);
     }
