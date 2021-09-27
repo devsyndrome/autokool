@@ -19,8 +19,12 @@ class CreateEstimatePartsTable extends Migration
             $table->char('nopart');
             $table->string('sparepart');
             $table->integer('qty');
-            $table->integer('pricepart');
-            $table->char('status_hpp');
+            $table->integer('price_p');
+            $table->integer('diskon_dpp_p');
+            $table->integer('markup_p');
+            $table->integer('price_asuransi_p');
+            $table->integer('diskon_asuransi_p');
+            
             $table->timestamps();
         });
     }
