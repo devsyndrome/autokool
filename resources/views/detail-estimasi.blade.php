@@ -25,8 +25,8 @@ Admin
 {{ $estimates->nopol }}
 @endsection
 @section('content')
-<h2 class="section-title">Jasa</h2>
-<p class="section-lead">Data Estimasi Jasa</p>
+<h2 class="section-title">Detail</h2>
+<p class="section-lead">Data Estimasi Part & Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -64,23 +64,73 @@ Admin
                         <th><span class="badge badge-success">{{ $estimates->status }}</span></th>
                     </tr>
                 </table>
+                
                 <hr>
-                <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
-                        Data</i></a>
+                
+                <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah"><i class="far fa-edit">Konfirmasi</i></a>
+                <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi untuk melanjutkan ke bagian Logistik</pre></p>
                 <hr>
-                <table id="users-table" class="table table-striped table-bordered">
+                <h4><span class="badge badge-dark">Spare Part</span></h4>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No. Part</th>
+                            <th>Spare Part</th>
+                            <th>QTY</th>
+                            <th>Pricelist(ppn)</th>
+                            <th>Sub Total(ppn)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                        setlocale(LC_MONETARY,"en_ID");    
+                        @endphp
+                        @foreach ($part as $j)
+                        <tr>
+                            <td>{{ $j->nopart }}</td>
+                            <td>{{ $j->sparepart }}</td>
+                            <td>{{ $j->qty }}</td>
+                            <td>{{ "Rp.".number_format($j->price_p,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($j->price_p * $j->qty ),0,',','.') }}</td>
+                        </tr>
+                        @endforeach
+                        <tr>
+                            <th colspan="4">TOTAL</th>
+                            <th>{{ "Rp.".number_format($totalpart->total,0,',','.')}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4><span class="badge badge-dark">Jasa</span></h4>
+                <table  class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Jasa</th>
                             <th>Note</th>
                             <th>Qty</th>
-                            <th>Pricelist</th>
+                            <th>Pricelist(ppn)</th>
                             <th>Sub Total(ppn)</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        @php
+                        setlocale(LC_MONETARY,"en_ID");    
+                        @endphp
+                        @foreach ($jasa as $i)
+                        <tr>
+                            <td>{{ $i->jasa }}</td>
+                            <td>{{ $i->note }}</td>
+                            <td>{{ $i->qty }}</td>
+                            <td>{{ "Rp.".number_format($i->price_s,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($i->price_s * $i->qty ),0,',','.') }}</td>
+                        </tr>
+                        @endforeach
+                        <tr>
+                            <th colspan="4">TOTAL</th>
+                            <th>{{ "Rp.".number_format($totaljasa->total,0,',','.') }}</th>
+                        </tr>
+                    </tbody>
                 </table>
-
+                
             </div>
         </div>
     </div>
@@ -188,158 +238,7 @@ Admin
                 }
             });
         });
-        //READ - Tampil Data
-        $(document).ready(function () {
-            var id= $("input[name=id_e]").val();
-            $('#users-table').DataTable({
-                processing: true,
-                serverside: true,
-                ajax: {
-                    url:"{{ url('estimasi') }}" + '/jasa/' + id,
-                    // url:"{{ url('part') }}",
-                    type: 'GET'
-                },
-                columns: [{
-                        data: 'jasa',
-                        name: 'jasa'
-                    },
-                    {
-                        data: 'note',
-                        name: 'note'
-                    },
-                    {
-                        data: 'qty',
-                        name: 'qty'
-                    },
-                    {
-                        data: 'price_s',
-                        name: 'price_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_s);
-                        }
-                    },
-                    {
-                        data: 'subtotal',
-                        name: 'subtotal',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal);
-                        }
-                    },
-                    {
-                        data: 'action',
-                        name: 'action'
-                    },
-
-                ],
-                order: [
-                    [0, 'asc']
-                ]
-            });
-        });
-        //TOMBOL TAMBAH DATA
-        //jika tombol-tambah diklik maka
-        $('#tombol-tambah').click(function () {
-            $("#id").attr('readonly', false)
-            $('#button-simpan').val("create-post"); //valuenya menjadi create-post
-            $('#id').val(''); //valuenya menjadi kosong
-            $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
-            $('#tambah-edit-modal').modal('show'); //modal tampil
-        });
-
-        //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
-        //jika id = form-tambah-edit panjangnya lebih dari 0 atau bisa dibilang terdapat data dalam form tersebut maka
-        //jalankan jquery validator terhadap setiap inputan dll dan eksekusi script ajax untuk simpan data
-        if ($("#form-tambah-edit").length > 0) {
-            $("#form-tambah-edit").validate({
-                submitHandler: function (form) {
-                    var actionType = $('#tombol-simpan').val();
-                    $('#tombol-simpan').html('Sending..');
-
-                    $.ajax({
-                        data: $('#form-tambah-edit')
-                            .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('jasa.store') }}", //url simpan data
-                        type: "POST", //karena simpan kita pakai method POST
-                        dataType: 'json', //data tipe kita kirim berupa JSON
-                        success: function (data) { //jika berhasil 
-                            $('#form-tambah-edit').trigger("reset"); //form reset
-                            $('#tambah-edit-modal').modal('hide'); //modal hide
-                            $('#tombol-simpan').html('Simpan'); //tombol simpan
-                            // var oTable = $('#lecturers-table').dataTable();
-                            $('#users-table').DataTable().ajax.reload();
-                            // oTable.fnDraw(false); //reset datatable
-                            iziToast.success({ //tampilkan iziToast dengan notif data berhasil disimpan pada posisi kanan bawah
-                                title: 'Data saved',
-                                message: '{{ Session('
-                                success ')}}',
-                                position: 'bottomRight'
-                            });
-                        },
-                        error: function (data) { //jika error tampilkan error pada console
-                            console.log('Error:', data);
-                            $('#tombol-simpan').html('Simpan');
-                        }
-                    });
-                }
-            })
-        }
-
-        //TOMBOL EDIT DATA PER PEGAWAI DAN TAMPIKAN DATA BERDASARKAN ID PEGAWAI KE MODAL
-        //ketika class edit-post yang ada pada tag body di klik maka
-        $('body').on('click', '.edit-post', function () {
-            $("#id").attr('readonly', true)
-            var data_id = $(this).data('id');
-            $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("Edit Spare Part");
-                $('#tombol-simpan').val("edit-post");
-                $('#tambah-edit-modal').modal('show');
-
-                //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-                $('#id').val(data.id_services);
-                $('#jasa').val(data.jasa);
-                $('#note').val(data.note);
-                $('#qty').val(data.qty);
-                $('#price_s').val(data.price_s);
-            })
-        });
-
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.delete', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal').modal('show');
-        });
-
-        //jika tombol hapus pada modal konfirmasi di klik maka
-        $('#tombol-hapus').click(function () {
-            $.ajax({
-
-                url: "../../jasa/" + dataId, //eksekusi ajax ke url ini
-                type: 'delete',
-                beforeSend: function () {
-                    $('#tombol-hapus').text('Delete'); //set text untuk tombol hapus
-                },
-                success: function (data) { //jika sukses
-                    setTimeout(function () {
-                        $('#konfirmasi-modal').modal('hide'); //sembunyikan konfirmasi modal
-                        $('#users-table').DataTable().ajax.reload();
-                        // var oTable = $('#table_pegawai').dataTable();
-                        // oTable.fnDraw(false); //reset datatable
-                    });
-                    iziToast.warning({ //tampilkan izitoast warning
-                        title: 'Data deleted',
-                        message: '{{ Session('
-                        delete ')}}',
-                        position: 'bottomRight'
-                    });
-                }
-            })
-        });
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.delete', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal').modal('show');
-        });
+        
 
     </script>
     @endpush

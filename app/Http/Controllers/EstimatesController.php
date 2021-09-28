@@ -168,6 +168,12 @@ class EstimatesController extends Controller
     }
     public function detail(Request $request,$id)
     {
-        return response()->json($id);
+        $estimates = Estimates::where('id',$id)->first();
+        $jasa = Estimate_services::select('*',Estimate_services::raw('(price_s * qty) AS subtotal'))->where('id_estimate',$id)->get();
+        $part = Estimate_parts::select('*',Estimate_parts::raw('(price_p * qty) AS subtotal'))->where('id_estimate',$id)->get();
+        $totaljasa = Estimate_services::selectRaw('SUM(price_s * qty) as total')->where('id_estimate',$id)->first();
+        $totalpart = Estimate_parts::selectRaw('SUM(price_p * qty) as total')->where('id_estimate',$id)->first();
+        
+        return view('detail-estimasi',compact('id','estimates','jasa','part','totaljasa','totalpart'));
     }
 }

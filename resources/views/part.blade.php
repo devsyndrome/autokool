@@ -22,7 +22,7 @@ Admin
 </div>
 @endsection
 @section('section-header')
-{{ $estimates->tgl }}
+{{ $estimates->nopol }}
 @endsection
 @section('content')
 <h2 class="section-title">Spare Part</h2>
@@ -32,13 +32,38 @@ Admin
     <div class="section-body">
         <div class="card">
             <div class="card-body">
-                <p><strong> Asuransi: {{ $estimates->asuransi }}</strong></p>
-                <p><strong> No. Pol: {{ $estimates->nopol }}</strong></p>
-                <p><strong> Type: {{ $estimates->type }}</strong></p>
-                <p><strong> Tahun: {{ $estimates->tahun }}</strong></p>
-                <p><strong> Nama: {{ $estimates->nama_tertanggung }}</strong></p>
-                <p><strong> Status: <span class="badge badge-success">{{ $estimates->status }}</span></strong></p>
-                
+                <table>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>:</th>
+                        <th>{{ $estimates->tgl }}</th>
+                    </tr>
+                    <tr>
+                        <th>Asuransi</th>
+                        <th>:</th>
+                        <th>{{ $estimates->asuransi }}</th>
+                    </tr>
+                    <tr>
+                        <th>No. Pol</th>
+                        <th>:</th>
+                        <th>{{ $estimates->nopol }}</th>
+                    </tr>
+                    <tr>
+                        <th>Type</th>
+                        <th>:</th>
+                        <th>{{ $estimates->tahun }}</th>
+                    </tr>
+                    <tr>
+                        <th>Nama</th>
+                        <th>:</th>
+                        <th>{{ $estimates->nama_tertanggung }}</th>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <th>:</th>
+                        <th><span class="badge badge-success">{{ $estimates->status }}</span></th>
+                    </tr>
+                </table>
                 <hr>
                 <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
                         Data</i></a>
