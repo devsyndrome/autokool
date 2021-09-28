@@ -215,7 +215,14 @@ Kelola Data
                         data: 'status',
                         name: 'status',
                         "render": function ( data, type, row, meta ) {
-                        return '<div class="badge badge-success">'+data+'</div>';
+                        if(data == "Estimasi"){
+                            return '<div class="badge badge-success">'+data+'</div>';
+                        }else if(data == "Logistik"){
+                            return '<div class="badge badge-warning">'+data+'</div>';
+                        }else{
+                            return '<div class="badge badge-info">'+data+'</div>';
+                        }
+                            
                         }
                     },
                     {

@@ -73,9 +73,9 @@ Admin
                         <tr>
                             <th>Jasa</th>
                             <th>Note</th>
-                            <th>Qty</th>
-                            <th>Pricelist</th>
-                            <th>Sub Total(ppn)</th>
+                            <th>QTY</th>
+                            <th>Pricelist(ppn)</th>
+                            <th>Subtotal(ppn)</th>
                             <th>Action</th>
                         </tr>
                     </thead>

@@ -74,8 +74,8 @@ Admin
                             <th>No. Part</th>
                             <th>Spare Part</th>
                             <th>QTY</th>
-                            <th>Price List(ppn)</th>
-                            <th>Sub Total(ppn)</th>
+                            <th>Pricelist(ppn)</th>
+                            <th>Subtotal(ppn)</th>
                             <th>Action</th>
                         </tr>
                     </thead>

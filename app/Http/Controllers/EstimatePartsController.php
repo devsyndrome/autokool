@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estimate_parts;
+use App\Models\Estimates;
 use Illuminate\Http\Request;
 
 class EstimatePartsController extends Controller
@@ -34,9 +35,13 @@ class EstimatePartsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $id = $request->id_e;
+        $post= Estimates::where('id', $id)->update([
+            'status' => 'Logistik',
+        ]);
+        return response()->json($post);
     }
 
     /**

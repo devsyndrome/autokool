@@ -61,15 +61,25 @@ Admin
                     <tr>
                         <th>Status</th>
                         <th>:</th>
-                        <th><span class="badge badge-success">{{ $estimates->status }}</span></th>
+                        <th>
+                            @if ($estimates->status == "Estimates")
+                                <span class="badge badge-success">{{ $estimates->status }}</span>
+                            @elseif (($estimates->status == "Logistik"))
+                            <span class="badge badge-warning">{{ $estimates->status }}</span>
+                            @else
+                            <span class="badge badge-info">{{ $estimates->status }}</span>
+                            @endif
+                            
+                        </th>
                     </tr>
                 </table>
                 
                 <hr>
-                
+                @if ($estimates->status == "Estimasi")
                 <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah"><i class="far fa-edit">Konfirmasi</i></a>
                 <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi untuk melanjutkan ke bagian Logistik</pre></p>
                 <hr>
+                @endif
                 <h4><span class="badge badge-dark">Spare Part</span></h4>
                 <table class="table table-striped table-bordered">
                     <thead>
@@ -106,7 +116,7 @@ Admin
                         <tr>
                             <th>Jasa</th>
                             <th>Note</th>
-                            <th>Qty</th>
+                            <th>QTY</th>
                             <th>Pricelist(ppn)</th>
                             <th>Sub Total(ppn)</th>
                         </tr>
@@ -174,36 +184,10 @@ Admin
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
-                                <input type="hidden" name="id" id="id">
-                                <div class="form-group">
-                                    <label for="jasa" class="col-sm-12 control-label">Jasa</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control" id="jasa" name="jasa" value="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="note" class="col-sm-12 control-label">Note</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control" id="note" name="note" value=""
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Qty</label>
-                                    <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="qty" name="qty" min="0" value=""
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pricelist" class="col-sm-12 control-label">Price List</label>
-                                    <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="price_s" name="price_s" min="0" value="" required>
-                                    </div>
-                                </div>
+                                <p>Data yang sudah dikonfirmasi tidak akan lagi bisa diubah atau dihapus, pastikan data benar!</p>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
-                                        value="create">Submit
+                                        value="create">Lanjutkan
                                     </button>
                                 </div>
                             </div>
@@ -239,6 +223,54 @@ Admin
             });
         });
         
+//TOMBOL TAMBAH DATA
+        //jika tombol-tambah diklik maka
+        $('#tombol-tambah').click(function () {
+            $("#id").attr('readonly', false)
+            $('#button-simpan').val("create-post"); //valuenya menjadi create-post
+            $('#id').val(''); //valuenya menjadi kosong
+            $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
+            $('#modal-judul').html("Konfirmasi"); //valuenya tambah pegawai baru
+            $('#tambah-edit-modal').modal('show'); //modal tampil
+        });
 
+        //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
+        //jika id = form-tambah-edit panjangnya lebih dari 0 atau bisa dibilang terdapat data dalam form tersebut maka
+        //jalankan jquery validator terhadap setiap inputan dll dan eksekusi script ajax untuk simpan data
+        if ($("#form-tambah-edit").length > 0) {
+            $("#form-tambah-edit").validate({
+                submitHandler: function (form) {
+                    var actionType = $('#tombol-simpan').val();
+                    $('#tombol-simpan').html('Sending..');
+
+                    $.ajax({
+                        data: $('#form-tambah-edit')
+                            .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
+                        url: "{{ route('part.create') }}", //url simpan data
+                        type: "GET", //karena simpan kita pakai method POST
+                        dataType: 'json', //data tipe kita kirim berupa JSON
+                        success: function (data) { //jika berhasil 
+                            $('#form-tambah-edit').trigger("reset"); //form reset
+                            $('#tambah-edit-modal').modal('hide'); //modal hide
+                            $('#tombol-simpan').html('Simpan'); //tombol simpan
+                            // var oTable = $('#lecturers-table').dataTable();
+                            $('#users-table').DataTable().ajax.reload();
+                            // oTable.fnDraw(false); //reset datatable
+                            iziToast.success({ //tampilkan iziToast dengan notif data berhasil disimpan pada posisi kanan bawah
+                                title: 'Data saved',
+                                message: '{{ Session('
+                                success ')}}',
+                                position: 'bottomRight'
+                            });
+                            location.reload();
+                        },
+                        error: function (data) { //jika error tampilkan error pada console
+                            console.log('Error:', data);
+                            $('#tombol-simpan').html('Simpan');
+                        }
+                    });
+                }
+            })
+        }
     </script>
     @endpush

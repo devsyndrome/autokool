@@ -16,7 +16,7 @@ class EstimatesController extends Controller
      */
     public function index(Request $request)
     {
-        $list_estimates = Estimates::all();
+        $list_estimates = Estimates::get();
         if($request->ajax()){
             return datatables()->of($list_estimates)
             ->addColumn('action', function($data){
@@ -26,9 +26,11 @@ class EstimatesController extends Controller
                 $button .= '&nbsp;&nbsp;';
                 $button .= '<a href="'.url('estimasi').'/detail/'.$data->id.'" class="btn btn-outline-success btn-sm">Detail</a>';
                 $button .= '&nbsp;&nbsp;';
+                if($data->status == "Estimasi"){
                 $button .= '<a href="javascript:void(0) " data-toggle="tooltip"  data-id="'.$data->id.'" data-original-title="Edit" class="edit btn btn-outline-warning btn-sm edit-post"><i class="far fa-edit"></i></a>';
                 $button .= '&nbsp;&nbsp;';
-                $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i></button>';     
+                $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i></button>';
+                }     
                 return $button;
             })
             ->rawColumns(['action'])
@@ -126,6 +128,8 @@ class EstimatesController extends Controller
     public function destroy($id)
     {
         $post = Estimates::where('id',$id)->delete();
+        Estimate_parts::where('id_estimate',$id)->delete();
+        Estimate_services::where('id_estimate',$id)->delete();
         return response()->json($post);
     }
 
