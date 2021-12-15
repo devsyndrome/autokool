@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Estimate_services;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EstimateServicesController extends Controller
 {
@@ -12,6 +13,10 @@ class EstimateServicesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index()
     {
         //

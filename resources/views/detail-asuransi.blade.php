@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Estimasi
+Asuransi
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -26,7 +26,7 @@ Estimasi
 @endsection
 @section('content')
 <h2 class="section-title">Detail</h2>
-<p class="section-lead">Data Estimasi Part & Jasa</p>
+<p class="section-lead">Data SPK Asuransi Sparepart & Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -80,9 +80,10 @@ Estimasi
                 </table>
                 
                 <hr>
-                @if ($estimates->status == "Estimasi")
+                @if ($estimates->status == "Logistik")
                 <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah">Konfirmasi</a>
-                <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi untuk melanjutkan ke bagian Logistik</pre></p>
+                <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi dan pilih penawaran untuk melanjutkan ke bagian Penawaran</pre></p>
+                <p><pre>*Pilih estimasi untuk mengembalikan ke bagian estimator</pre></p>
                 <hr>
                 @endif
                 <h4><span class="badge badge-dark">Spare Part</span></h4>
@@ -93,27 +94,50 @@ Estimasi
                             <th>Spare Part</th>
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
-                            <th>Sub Total(ppn)</th>
+                            <th>Subtotal(ppn)</th>
+                            <th>Diskon(%)</th>
+                            <th>Netto(dpp)</th>
+                            <th>Subtotal(dpp)</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
-                        setlocale(LC_MONETARY,"en_ID");    
+                        setlocale(LC_MONETARY,"en_ID");
+                        $sum_qty = 0;
+                        $sum_price_p = 0;
+                        $sum_sub_price_p = 0;
+                        $sum_netto = 0;
+                        $sum_subtotal_dpp = 0; 
                         @endphp
                         @foreach ($part as $j)
                         <tr>
                             <td>{{ $j->nopart }}</td>
                             <td>{{ $j->sparepart }}</td>
                             <td>{{ $j->qty }}</td>
-                            <td>{{ "Rp.".number_format($j->price_p,0,',','.') }}</td>
-                            <td>{{ "Rp.".number_format(($j->price_p * $j->qty ),0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format($j->price_asuransi_p,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($j->price_asuransi_p * $j->qty ),0,',','.') }}</td>
+                            <td>{{ number_format($j->diskon_asuransi_p,0,',','.')."%" }}</td>
+                            <td>{{ "Rp.".number_format($j->netto,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format($j->subtotal_dpp,0,',','.') }}</td>
                         </tr>
+                        @php 
+                        $sum_qty += $j->qty;
+                        $sum_price_p += $j->price_p;
+                        $sum_sub_price_p += $j->price_p * $j->qty;
+                        $sum_netto += $j->netto;
+                        $sum_subtotal_dpp += $j->subtotal_dpp;
+                        @endphp
                         @endforeach
+                        
                         <tr>
                             <th colspan="2">TOTAL</th>
-                            <th>{{ $totalqty_p->pqty}}</th>
-                            <th>{{ "Rp.".number_format($totalprice_p->sprice_p,0,',','.')}}</th>
-                            <th>{{ "Rp.".number_format($totalpart->total,0,',','.')}}</th>
+                            <th>{{ $sum_qty}}</th>
+                            <th>{{ "Rp.".number_format($sum_price_p,0,',','.')}}</th>
+                            <th>{{ "Rp.".number_format($sum_sub_price_p,0,',','.')}}</th>
+                            <th></th>
+                            <th>{{ "Rp.".number_format($sum_netto,0,',','.')}}</th>
+                            <th>{{ "Rp.".number_format($sum_subtotal_dpp,0,',','.')}}</th>
+                            
                         </tr>
                     </tbody>
                 </table>
@@ -125,28 +149,52 @@ Estimasi
                             <th>Note</th>
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
-                            <th>Sub Total(ppn)</th>
+                            <th>Subtotal(ppn)</th>
+                            <th>Diskon</th>
+                            <th>Netto(dpp)</th>
+                            <th>Subtotal(dpp)</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
                         setlocale(LC_MONETARY,"en_ID");    
+                        $sum_qty = 0;
+                        $sum_price_s = 0;
+                        $sum_sub_price_s = 0;
+                        $sum_netto = 0;
+                        $sum_subtotal_dpp = 0;
                         @endphp
                         @foreach ($jasa as $i)
                         <tr>
                             <td>{{ $i->jasa }}</td>
                             <td>{{ $i->note }}</td>
                             <td>{{ $i->qty }}</td>
-                            <td>{{ "Rp.".number_format($i->price_s,0,',','.') }}</td>
-                            <td>{{ "Rp.".number_format(($i->price_s * $i->qty ),0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format($i->price_asuransi_s,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($i->price_asuransi_s * $i->qty ),0,',','.') }}</td>
+                            <td>{{ number_format($i->diskon_asuransi_s,0,',','.')."%" }}</td>
+                            <td>{{ "Rp.".number_format($i->netto,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format($i->subtotal_dpp,0,',','.') }}</td>
+                            
                         </tr>
+                        @php 
+                        $sum_qty += $i->qty;
+                        $sum_price_s += $i->price_s;
+                        $sum_sub_price_s += $i->price_s * $i->qty;
+                        $sum_netto += $i->netto;
+                        $sum_subtotal_dpp += $i->subtotal_dpp;
+                        @endphp
                         @endforeach
+                        
                         <tr>
-                            <th colspan="2">TOTAL</th>
-                            <th>{{ $totalqty_s->sqty}}</th>
-                            <th>{{ "Rp.".number_format($totalprice_s->sprice_s,0,',','.')}}</th>
-                            <th>{{ "Rp.".number_format($totaljasa->total,0,',','.') }}</th>
-                        </tr>
+                        <th colspan="2">TOTAL</th>
+                        <th>{{ $sum_qty}}</th>
+                        <th>{{ "Rp.".number_format($sum_price_s,0,',','.')}}</th>
+                        <th>{{ "Rp.".number_format($sum_sub_price_s,0,',','.')}}</th>
+                        <th></th>
+                        <th>{{ "Rp.".number_format($sum_netto,0,',','.')}}</th>
+                        <th>{{ "Rp.".number_format($sum_subtotal_dpp,0,',','.')}}</th>
+                        
+                    </tr>
                     </tbody>
                 </table>
                 
@@ -193,7 +241,16 @@ Estimasi
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
-                                <p>Data yang sudah dikonfirmasi tidak akan lagi bisa diubah atau dihapus, pastikan data benar!</p>
+                                <div class="form-group">
+                                    <label for="status" class="col-sm-12 control-label">Status</label>
+                                    <div class="col-sm-12">
+                                        <select name="status" id="status" class="form-control">
+                                            <option value="Penawaran">Penawaran</option>
+                                            <option value="Estimasi">Estimasi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p><pre>Pilih penawaran jika data sudah benar, jika ada perubahan data pilih estimasi untuk mengembalikan kepada estimator!</pre></p>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
                                         value="create">Lanjutkan
@@ -255,7 +312,7 @@ Estimasi
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('part.create') }}", //url simpan data
+                        url: "{{ route('asuransi.create') }}", //url simpan data
                         type: "GET", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 

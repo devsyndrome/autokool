@@ -11,7 +11,7 @@ User
     integrity="sha256-pODNVtK3uOhL8FUNWWvFQK0QoQoV3YA9wGGng6mbZ0E=" crossorigin="anonymous" />
 @endpush
 @section('username')
-Admin
+{{ Auth::user()->name }}
 @endsection
 @section('judul')
 <h1>User</h1>
@@ -30,9 +30,8 @@ Kelola Data
 
 <div class="section-body">
     <div class="section-body">
+       
         <div class="card">
-            <div class="card-header">
-            </div>
             <div class="card-body">
                 <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
                         Data</i></a>
@@ -91,7 +90,8 @@ Kelola Data
                         <div class="row">
                             <div class="col-sm-12">
 
-                                <input type="hidden" name="id" id="id">
+
+                                <input type="text" name="id" id="id">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-12 control-label">Name</label>
                                     <div class="col-sm-12">
@@ -119,7 +119,7 @@ Kelola Data
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="name" class="col-sm-12 control-label">password</label>
+                                    <label for="name" class="col-sm-12 control-label">Password</label>
                                     <div class="col-sm-12">
                                         <input id="password" type="password"
                                             class="form-control @error('password') is-invalid @enderror" name="password"
@@ -138,7 +138,47 @@ Kelola Data
                                 </span>
                                 @enderror
                             </div>
-
+                            <div class="form-group">
+                                <label for="name" class="col-sm-12 control-label">Akses Halaman</label>
+                                <div class="col-sm-12">
+                                    <div class="selectgroup selectgroup-pills">
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="user" id="user" value="1"  class="selectgroup-input">
+                                          <span class="selectgroup-button">User</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="estimasi" id="estimasi" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Estimasi</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="spk" id="spk" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">SPK</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="logistik" id="logistik" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">HPP & Markup</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="penawaran" id="penawaran" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Penawaran</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="penawaranhpp" id="penawaranhpp" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Penawaran vs HPP</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="spkhpp" id="spkhpp" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">SPK vs HPP</span>
+                                        </label>
+                                      </div>
+                                </div>
+                            </div>
+                            @error('class_name')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
                             <div class="col-sm-offset-2 col-sm-12">
                                 <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
                                     value="create">Submit
@@ -216,6 +256,8 @@ Kelola Data
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
             $('#modal-judul').html("Tambah Pengguna"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
+            $('#email').attr('readonly', false)
+            
         });
 
         //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
@@ -267,9 +309,46 @@ Kelola Data
                 $('#tambah-edit-modal').modal('show');
 
                 //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-                $('#id').val(data.id);
+                $('#id').val(data.id_user);
                 $('#name').val(data.name);
-                $('#email').val(data.email);
+                $('#password').val('');
+                $('#email').val(data.email).attr('readonly', true);
+                // $('#password').val(data.password);
+                if(data.user == 1){
+                    $('#user').prop('checked', true);
+                }else{
+                    $('#user').prop('checked', false);
+                }
+                if(data.estimasi == 1){
+                    $('#estimasi').prop('checked', true);
+                }else{
+                    $('#estimasi').prop('checked', false);
+                }
+                if(data.spk == 1){
+                    $('#spk').prop('checked', true);
+                }else{
+                    $('#spk').prop('checked', false);
+                }
+                if(data.logistik == 1){
+                    $('#logistik').prop('checked', true);
+                }else{
+                    $('#logistik').prop('checked', false);
+                }
+                if(data.penawaran == 1){
+                    $('#penawaran').prop('checked', true);
+                }else{
+                    $('#penawaran').prop('checked', false);
+                }
+                if(data.penawaranhpp == 1){
+                    $('#penawaranhpp').prop('checked', true);
+                }else{
+                    $('#penawaranhpp').prop('checked', false);
+                }
+                if(data.spkhpp == 1){
+                    $('#spkhpp').prop('checked', true);
+                }else{
+                    $('#spkhpp').prop('checked', false);
+                }
             })
         });
 

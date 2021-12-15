@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Estimasi
+Logistik
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -26,7 +26,7 @@ Estimasi
 @endsection
 @section('content')
 <h2 class="section-title">Spare Part</h2>
-<p class="section-lead">Data Estimasi Spare Part</p>
+<p class="section-lead">Data HPP Spare Part</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -51,6 +51,11 @@ Estimasi
                     <tr>
                         <th>Type</th>
                         <th>:</th>
+                        <th>{{ $estimates->type }}</th>
+                    </tr>
+                    <tr>
+                        <th>Tahun</th>
+                        <th>:</th>
                         <th>{{ $estimates->tahun }}</th>
                     </tr>
                     <tr>
@@ -74,17 +79,6 @@ Estimasi
                     </tr>
                 </table>
                 <hr>
-                <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
-                        Part</i></a>
-                <a href="javascript:void(0)" class="btn btn-primary" id="tombol-tambah-jasa"><i class="far fa-edit">Tambah
-                        Jasa</i></a>
-                        {{-- @if ($estimates->status == "Estimasi")
-                        <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah">Konfirmasi</a>
-                        <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi untuk melanjutkan ke bagian Logistik</pre></p>
-                        <hr>
-                        @endif --}}
-                <hr>
-                <h4>Spare Part</h4>
                 <table id="users-table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -93,24 +87,17 @@ Estimasi
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
                             <th>Subtotal(ppn)</th>
+                            <th>Pricelist(dpp)</th>
+                            <th>Diskon(%)</th>
+                            <th>Netto(dpp)</th>
+                            <th>Subtotal(dpp)</th>
+                            <th>Markup(%)</th>
+                            <th>After Markup(ppn)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                 </table>
-                <hr>
-                <h4>Jasa</h4>
-                <table id="users-table-jasa" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Jasa</th>
-                            <th>Note</th>
-                            <th>QTY</th>
-                            <th>Pricelist(ppn)</th>
-                            <th>Subtotal(ppn)</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
+
             </div>
         </div>
     </div>
@@ -155,30 +142,19 @@ Estimasi
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
                                 <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="jenis" id="jenis" value="part">
                                 <div class="form-group">
-                                    <label for="nopart" class="col-sm-12 control-label">No. Part</label>
+                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
                                     <div class="col-sm-12">
-                                        <input type="text" class="form-control" id="nopart" name="nopart" value="" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="sparepart" class="col-sm-12 control-label">Spare Part</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control" id="sparepart" name="sparepart" value=""
+                                        <input type="number" class="form-control" id="diskon_dpp" name="diskon_dpp" min="0" value=""
                                             required>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Qty</label>
+                                    <label for="qty" class="col-sm-12 control-label">Mark Up(%)</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="qty" name="qty" min="0" value=""
+                                        <input type="number" class="form-control" id="markup" name="markup" min="0" value=""
                                             required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pricelist" class="col-sm-12 control-label">Price List</label>
-                                    <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="price_p" name="price_p" min="0" value="" required>
                                     </div>
                                 </div>
                                 <div class="col-sm-offset-2 col-sm-12">
@@ -195,90 +171,9 @@ Estimasi
             </div>
         </div>
     </div>
-</div>
     <!-- AKHIR MODAL -->
 
-    <!-- MULAI MODAL KONFIRMASI DELETE-->
-
-    <div class="modal fade" tabindex="-1" role="dialog" id="konfirmasi-modal-jasas" data-backdrop="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">WARNING</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p><b>Yakin ingin hapus data?</b></p>
-                    <p>*Data akan terhapus oleh sistem, pastikan data yang dipilih benar.</p>
-                </div>
-                <div class="modal-footer bg-whitesmoke br">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" name="tombol-hapus-jasa" id="tombol-hapus-jasa">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- AKHIR MODAL -->
-
-   <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-   <div class="modal fade" id="tambah-edit-modal-jasa" aria-hidden="true">
-    <div class="modal-dialog ">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-judul-jasa"></h5>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-tambah-edit-jasa" name="form-tambah-edit-jasa" class="form-horizontal">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
-                            <input type="hidden" name="id" id="id_s">
-                            <div class="form-group">
-                                <label for="jasa" class="col-sm-12 control-label">Jasa</label>
-                                <div class="col-sm-12">
-                                    <input type="text" class="form-control" id="jasa" name="jasa" value="" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="note" class="col-sm-12 control-label">Note</label>
-                                <div class="col-sm-12">
-                                    <input type="text" class="form-control" id="note" name="note" value=""
-                                        required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="qty" class="col-sm-12 control-label">Qty</label>
-                                <div class="col-sm-12">
-                                    <input type="number" class="form-control" id="qty_jasa" name="qty" min="0" value=""
-                                        required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="pricelist" class="col-sm-12 control-label">Price List</label>
-                                <div class="col-sm-12">
-                                    <input type="number" class="form-control" id="price_s" name="price_s" min="0" value="" required>
-                                </div>
-                            </div>
-                            <div class="col-sm-offset-2 col-sm-12">
-                                <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
-                                    value="create">Submit
-                                </button>
-                            </div>
-                        </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div>
-<!-- AKHIR MODAL -->
-
+   
     @endpush
     @push('script')
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -307,8 +202,9 @@ Estimasi
             $('#users-table').DataTable({
                 processing: true,
                 serverside: true,
+                "scrollX": true,
                 ajax: {
-                    url:"{{ url('estimasi') }}" + '/part/' + id,
+                    url:"{{ url('logistik') }}" + '/part/' + id,
                     // url:"{{ url('part') }}",
                     type: 'GET'
                 },
@@ -339,52 +235,45 @@ Estimasi
                         }
                     },
                     {
-                        data: 'action',
-                        name: 'action'
-                    },
-
-                ],
-                order: [
-                    [0, 'asc']
-                ]
-            });
-        });
-
-         //READ - Tampil Data
-         $(document).ready(function () {
-            var id= $("input[name=id_e]").val();
-            $('#users-table-jasa').DataTable({
-                processing: true,
-                serverside: true,
-                ajax: {
-                    url:"{{ url('estimasi') }}" + '/jasa/' + id,
-                    // url:"{{ url('part') }}",
-                    type: 'GET'
-                },
-                columns: [{
-                        data: 'jasa',
-                        name: 'jasa'
-                    },
-                    {
-                        data: 'note',
-                        name: 'note'
-                    },
-                    {
-                        data: 'qty',
-                        name: 'qty'
-                    },
-                    {
-                        data: 'price_s',
-                        name: 'price_s',
+                        data: 'price_dpp',
+                        name: 'price_dpp',
                         render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_s);
+                            return meta.settings.fnFormatNumber(row.price_dpp);
                         }
                     },
                     {
-                        data: 'subtotal',
-                        name: 'subtotal',
+                        data: 'diskon_dpp_p',
+                        name: 'diskon',
                         render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal);
+                            return meta.settings.fnFormatNumber(row.diskon_dpp_p);
+                        }
+                    },
+                    {
+                        data: 'netto',
+                        name: 'netto',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.netto);
+                        }
+                    },
+                    {
+                        data: 'subtotal_dpp',
+                        name: 'subtotal_dpp',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.subtotal_dpp);
+                        }
+                    },
+                    {
+                        data: 'markup_p',
+                        name: 'markup_p',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.markup_p);
+                        }
+                    },
+                    {
+                        data: 'after',
+                        name: 'after',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.after);
                         }
                     },
                     {
@@ -405,8 +294,8 @@ Estimasi
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Jasa"); //valuenya tambah pegawai baru
-            $('#tambah-edit-modal').modal('show'); //modal tampil
+            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#tambah-mark').modal('show'); //modal tampil
         });
 
         //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
@@ -421,7 +310,7 @@ Estimasi
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('part.store') }}", //url simpan data
+                        url: "{{ route('logistik.store') }}", //url simpan data
                         type: "POST", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
@@ -453,7 +342,7 @@ Estimasi
             $("#id").attr('readonly', true)
             var data_id = $(this).data('id');
             $.get('../../part/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("Edit Spare Part");
+                $('#modal-judul').html("HPP");
                 $('#tombol-simpan').val("edit-post");
                 $('#tambah-edit-modal').modal('show');
 
@@ -463,8 +352,11 @@ Estimasi
                 $('#sparepart').val(data.sparepart);
                 $('#qty').val(data.qty);
                 $('#price_p').val(data.price_p);
+                $('#diskon_dpp').val(data.diskon_dpp_p);
+                $('#markup').val(data.markup_p);
             })
         });
+
 
         //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
         $(document).on('click', '.delete', function () {
@@ -500,104 +392,8 @@ Estimasi
         //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
         $(document).on('click', '.delete', function () {
             dataId = $(this).attr('id');
-            $('#konfirmasi-modal-jasa').modal('show');
-        });
-        $('#tombol-tambah-jasa').click(function () {
-            $("#id").attr('readonly', false)
-            $('#button-simpan-jasa').val("create-post"); //valuenya menjadi create-post
-            $('#id').val(''); //valuenya menjadi kosong
-            $('#form-tambah-edit-jasa').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul-jasa').html("Tambah Data Jasa"); //valuenya tambah pegawai baru
-            $('#tambah-edit-modal-jasa').modal('show'); //modal tampil
+            $('#konfirmasi-modal').modal('show');
         });
 
-        //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
-        //jika id = form-tambah-edit panjangnya lebih dari 0 atau bisa dibilang terdapat data dalam form tersebut maka
-        //jalankan jquery validator terhadap setiap inputan dll dan eksekusi script ajax untuk simpan data
-        if ($("#form-tambah-edit-jasa").length > 0) {
-            $("#form-tambah-edit-jasa").validate({
-                submitHandler: function (form) {
-                    var actionType = $('#tombol-simpan').val();
-                    $('#tombol-simpan').html('Sending..');
-
-                    $.ajax({
-                        data: $('#form-tambah-edit-jasa')
-                            .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('jasa.store') }}", //url simpan data
-                        type: "POST", //karena simpan kita pakai method POST
-                        dataType: 'json', //data tipe kita kirim berupa JSON
-                        success: function (data) { //jika berhasil 
-                            $('#form-tambah-edit-jasa').trigger("reset"); //form reset
-                            $('#tambah-edit-modal-jasa').modal('hide'); //modal hide
-                            $('#tombol-simpan').html('Simpan'); //tombol simpan
-                            // var oTable = $('#lecturers-table').dataTable();
-                            $('#users-table-jasa').DataTable().ajax.reload();
-                            // oTable.fnDraw(false); //reset datatable
-                            iziToast.success({ //tampilkan iziToast dengan notif data berhasil disimpan pada posisi kanan bawah
-                                title: 'Data saved',
-                                message: '{{ Session('
-                                success ')}}',
-                                position: 'bottomRight'
-                            });
-                        },
-                        error: function (data) { //jika error tampilkan error pada console
-                            console.log('Error:', data);
-                            $('#tombol-simpan').html('Simpan');
-                        }
-                    });
-                }
-            })
-        }
-
-        //TOMBOL EDIT DATA PER PEGAWAI DAN TAMPIKAN DATA BERDASARKAN ID PEGAWAI KE MODAL
-        //ketika class edit-post yang ada pada tag body di klik maka
-        $('body').on('click', '.edit-post-jasa', function () {
-            $("#id").attr('readonly', true)
-            var data_id = $(this).data('id');
-            $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul-jasa').html("Edit Jasa");
-                $('#tombol-simpan').val("edit-post-jasa");
-                $('#tambah-edit-modal-jasa').modal('show');
-
-                //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-                $('#id_s').val(data.id_services);
-                $('#jasa').val(data.jasa);
-                $('#note').val(data.note);
-                $('#qty_jasa').val(data.qty);
-                $('#price_s').val(data.price_s);
-            })
-        });
-
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.hapus', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal-jasas').modal('show');
-        });
-
-        //jika tombol hapus pada modal konfirmasi di klik maka
-        $('#tombol-hapus-jasa').click(function () {
-            $.ajax({
-
-                url: "../../jasa/" + dataId, //eksekusi ajax ke url ini
-                type: 'delete',
-                beforeSend: function () {
-                    $('#tombol-hapus-jasa').text('Delete'); //set text untuk tombol hapus
-                },
-                success: function (data) { //jika sukses
-                    setTimeout(function () {
-                        $('#konfirmasi-modal-jasas').modal('hide'); //sembunyikan konfirmasi modal
-                        $('#users-table-jasa').DataTable().ajax.reload();
-                        // var oTable = $('#table_pegawai').dataTable();
-                        // oTable.fnDraw(false); //reset datatable
-                    });
-                    iziToast.warning({ //tampilkan izitoast warning
-                        title: 'Data deleted',
-                        message: '{{ Session('
-                        delete ')}}',
-                        position: 'bottomRight'
-                    });
-                }
-            })
-        });
     </script>
     @endpush

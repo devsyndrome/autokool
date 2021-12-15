@@ -3,7 +3,7 @@
 Welcome
 @endsection
 @section('username')
-Admin
+{{ Auth::user()->name }}
 @endsection
 @section('judul')
 <h1>Welcome</h1>
@@ -25,7 +25,7 @@ Welcome
     </div>
     <div class="card-body">
         <div class="text-center">
-            <img src="../assets/img/cic.png" alt="" width="400" height="200" srcset="">
+            {{-- <img src="../assets/img/logo.png" alt="" width="400" height="200" srcset=""> --}}
             <hr>
             <h1>Autokool <span class="badge badge-primary">Estimator Apps</span></h1>
         </div>

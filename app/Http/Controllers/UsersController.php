@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserMenu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -13,9 +15,15 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index(Request $request)
     {
         $list_users = user::all();
+        $menu  = UserMenu::where('id_user',Auth::user()->id)->first();
+        $user_menus = User::join('user_menus', 'users.email', '=', 'user_menus.id_user')->get();
         if($request->ajax()){
             return datatables()->of($list_users)
             ->addColumn('action', function($data){
@@ -28,7 +36,7 @@ class UsersController extends Controller
             ->addIndexColumn()
             ->make(true);
         }
-        return view('user');
+        return view('user',compact('menu'));
     }
 
     /**
@@ -50,17 +58,38 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $id = $request->id;
+        $idrand = rand(1,999);
             if (User::where('id', '=', $id)->exists()) {
                 $post= User::where('id', $id)->update([
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                 ]);
+                $post= UserMenu::where('id_user', $id)->update([
+                    'user' => $request->has('user'),
+                    'estimasi' => $request->has('estimasi'),
+                    'spk' => $request->has('spk'),
+                    'logistik' => $request->has('logistik'),
+                    'penawaran' => $request->has('penawaran'),
+                    'penawaranhpp' => $request->has('penawaranhpp'),
+                    'spkhpp' => $request->has('spkhpp'),
+                ]);
             }else{
                 $post= User::create([
+                    'id' => $idrand,
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
+                ]);
+                $post= UserMenu::create([
+                    'id_user' => $idrand,
+                    'user' => $request->has('user'),
+                    'estimasi' => $request->has('estimasi'),
+                    'spk' => $request->has('spk'),
+                    'logistik' => $request->has('logistik'),
+                    'penawaran' => $request->has('penawaran'),
+                    'penawaranhpp' => $request->has('penawaranhpp'),
+                    'spkhpp' => $request->has('spkhpp'),
                 ]);
             }
         return response()->json($post);
@@ -85,8 +114,8 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $where = array('id' => $id);
-        $post  = User::where($where)->first();
+        $where = array('users.id' => $id);
+        $post  = User::join('user_menus', 'users.id', '=', 'user_menus.id_user')->where($where)->first();
         return response()->json($post);
     }
 
@@ -111,6 +140,8 @@ class UsersController extends Controller
     public function destroy($id)
     {
         $post = User::where('id',$id)->delete();
+        UserMenu::where('id_user',$id)->delete();
+        
         return response()->json($post);
     }
 }

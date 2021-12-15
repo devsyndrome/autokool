@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Estimasi
+Asuransi
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -25,8 +25,8 @@ Estimasi
 {{ $estimates->nopol }}
 @endsection
 @section('content')
-<h2 class="section-title">Detail</h2>
-<p class="section-lead">Data Estimasi Part & Jasa</p>
+<h2 class="section-title">Jasa</h2>
+<p class="section-lead">Data SPK Asuransi Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -78,78 +78,23 @@ Estimasi
                         </th>
                     </tr>
                 </table>
-                
                 <hr>
-                @if ($estimates->status == "Estimasi")
-                <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah">Konfirmasi</a>
-                <p><pre>*NOTE: Jika data sudah benar maka klik tombol konfirmasi untuk melanjutkan ke bagian Logistik</pre></p>
-                <hr>
-                @endif
-                <h4><span class="badge badge-dark">Spare Part</span></h4>
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>No. Part</th>
-                            <th>Spare Part</th>
-                            <th>QTY</th>
-                            <th>Pricelist(ppn)</th>
-                            <th>Sub Total(ppn)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                        setlocale(LC_MONETARY,"en_ID");    
-                        @endphp
-                        @foreach ($part as $j)
-                        <tr>
-                            <td>{{ $j->nopart }}</td>
-                            <td>{{ $j->sparepart }}</td>
-                            <td>{{ $j->qty }}</td>
-                            <td>{{ "Rp.".number_format($j->price_p,0,',','.') }}</td>
-                            <td>{{ "Rp.".number_format(($j->price_p * $j->qty ),0,',','.') }}</td>
-                        </tr>
-                        @endforeach
-                        <tr>
-                            <th colspan="2">TOTAL</th>
-                            <th>{{ $totalqty_p->pqty}}</th>
-                            <th>{{ "Rp.".number_format($totalprice_p->sprice_p,0,',','.')}}</th>
-                            <th>{{ "Rp.".number_format($totalpart->total,0,',','.')}}</th>
-                        </tr>
-                    </tbody>
-                </table>
-                <h4><span class="badge badge-dark">Jasa</span></h4>
-                <table  class="table table-striped table-bordered">
+                <table id="users-table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Jasa</th>
                             <th>Note</th>
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
-                            <th>Sub Total(ppn)</th>
+                            <th>Subtotal(ppn)</th>
+                            <th>Diskon</th>
+                            <th>Netto(dpp)</th>
+                            <th>Subtotal(dpp)</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @php
-                        setlocale(LC_MONETARY,"en_ID");    
-                        @endphp
-                        @foreach ($jasa as $i)
-                        <tr>
-                            <td>{{ $i->jasa }}</td>
-                            <td>{{ $i->note }}</td>
-                            <td>{{ $i->qty }}</td>
-                            <td>{{ "Rp.".number_format($i->price_s,0,',','.') }}</td>
-                            <td>{{ "Rp.".number_format(($i->price_s * $i->qty ),0,',','.') }}</td>
-                        </tr>
-                        @endforeach
-                        <tr>
-                            <th colspan="2">TOTAL</th>
-                            <th>{{ $totalqty_s->sqty}}</th>
-                            <th>{{ "Rp.".number_format($totalprice_s->sprice_s,0,',','.')}}</th>
-                            <th>{{ "Rp.".number_format($totaljasa->total,0,',','.') }}</th>
-                        </tr>
-                    </tbody>
                 </table>
-                
+
             </div>
         </div>
     </div>
@@ -180,8 +125,8 @@ Estimasi
 
     <!-- AKHIR MODAL -->
 
-    <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-    <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
+     <!-- MULAI MODAL FORM TAMBAH/EDIT-->
+     <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-header">
@@ -193,10 +138,32 @@ Estimasi
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
-                                <p>Data yang sudah dikonfirmasi tidak akan lagi bisa diubah atau dihapus, pastikan data benar!</p>
+                                <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="jenis" id="jenis" value="jasa">
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Harga Estimasi</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" class="form-control" id="price_s" name="price_s" min="0" value=""
+                                            required disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Harga (SPK Asuransi)</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" class="form-control" id="price" name="price" min="0" value=""
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" class="form-control" id="diskon" name="diskon" min="0" value=""
+                                            required>
+                                    </div>
+                                </div>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
-                                        value="create">Lanjutkan
+                                        value="create">Submit
                                     </button>
                                 </div>
                             </div>
@@ -231,15 +198,85 @@ Estimasi
                 }
             });
         });
-        
-//TOMBOL TAMBAH DATA
+        //READ - Tampil Data
+        $(document).ready(function () {
+            var id= $("input[name=id_e]").val();
+            $('#users-table').DataTable({
+                processing: true,
+                serverside: true,
+                "scrollX": true,
+                ajax: {
+                    url:"{{ url('asuransi') }}" + '/jasa/' + id,
+                    // url:"{{ url('part') }}",
+                    type: 'GET'
+                },
+                columns: [{
+                        data: 'jasa',
+                        name: 'jasa'
+                    },
+                    {
+                        data: 'note',
+                        name: 'note'
+                    },
+                    {
+                        data: 'qty',
+                        name: 'qty'
+                    },
+                    {
+                        data: 'price_asuransi_s',
+                        name: 'price_asuransi_s',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.price_asuransi_s);
+                        }
+                    },
+                    {
+                        data: 'subtotal',
+                        name: 'subtotal',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.subtotal);
+                        }
+                    },
+                    {
+                        data: 'diskon_dpp_s',
+                        name: 'diskon',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.diskon_asuransi_s);
+                        }
+                    },
+                    {
+                        data: 'netto',
+                        name: 'netto',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.netto);
+                        }
+                    },
+                    {
+                        data: 'subtotal_dpp',
+                        name: 'subtotal_dpp',
+                        render: function (data, type, row, meta) {
+                            return meta.settings.fnFormatNumber(row.subtotal_dpp);
+                        }
+                    },
+                    
+                    {
+                        data: 'action',
+                        name: 'action'
+                    },
+
+                ],
+                order: [
+                    [0, 'asc']
+                ]
+            });
+        });
+        //TOMBOL TAMBAH DATA
         //jika tombol-tambah diklik maka
         $('#tombol-tambah').click(function () {
             $("#id").attr('readonly', false)
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Konfirmasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Tambah Data SPK Asuransi"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
         });
 
@@ -255,8 +292,8 @@ Estimasi
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('part.create') }}", //url simpan data
-                        type: "GET", //karena simpan kita pakai method POST
+                        url: "{{ route('asuransi.store') }}", //url simpan data
+                        type: "POST", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
                             $('#form-tambah-edit').trigger("reset"); //form reset
@@ -271,7 +308,6 @@ Estimasi
                                 success ')}}',
                                 position: 'bottomRight'
                             });
-                            location.reload();
                         },
                         error: function (data) { //jika error tampilkan error pada console
                             console.log('Error:', data);
@@ -281,5 +317,64 @@ Estimasi
                 }
             })
         }
+
+        //TOMBOL EDIT DATA PER PEGAWAI DAN TAMPIKAN DATA BERDASARKAN ID PEGAWAI KE MODAL
+        //ketika class edit-post yang ada pada tag body di klik maka
+        $('body').on('click', '.edit-post', function () {
+            $("#id").attr('readonly', true)
+            var data_id = $(this).data('id');
+            $.get('../../jasa/' + data_id + '/edit', function (data) {
+                $('#modal-judul').html("SPK Asuransi");
+                $('#tombol-simpan').val("edit-post");
+                $('#tambah-edit-modal').modal('show');
+
+                //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
+                $('#id').val(data.id_services);
+                $('#jasa').val(data.jasa);
+                $('#note').val(data.note);
+                $('#price_s').val(data.price_s);
+                $('#price').val(data.price_asuransi_s);
+                $('#diskon').val(data.diskon_asuransi_s);
+                $('#markup').val(data.markup_s);
+            })
+        });
+
+        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
+        $(document).on('click', '.delete', function () {
+            dataId = $(this).attr('id');
+            $('#konfirmasi-modal').modal('show');
+        });
+
+        //jika tombol hapus pada modal konfirmasi di klik maka
+        $('#tombol-hapus').click(function () {
+            $.ajax({
+
+                url: "../../jasa/" + dataId, //eksekusi ajax ke url ini
+                type: 'delete',
+                beforeSend: function () {
+                    $('#tombol-hapus').text('Delete'); //set text untuk tombol hapus
+                },
+                success: function (data) { //jika sukses
+                    setTimeout(function () {
+                        $('#konfirmasi-modal').modal('hide'); //sembunyikan konfirmasi modal
+                        $('#users-table').DataTable().ajax.reload();
+                        // var oTable = $('#table_pegawai').dataTable();
+                        // oTable.fnDraw(false); //reset datatable
+                    });
+                    iziToast.warning({ //tampilkan izitoast warning
+                        title: 'Data deleted',
+                        message: '{{ Session('
+                        delete ')}}',
+                        position: 'bottomRight'
+                    });
+                }
+            })
+        });
+        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
+        $(document).on('click', '.delete', function () {
+            dataId = $(this).attr('id');
+            $('#konfirmasi-modal').modal('show');
+        });
+
     </script>
     @endpush

@@ -16,11 +16,17 @@ class CreateEstimatesTable extends Migration
         Schema::create('estimates', function (Blueprint $table) {
             $table->increments('id');
             $table->date('tgl');
+            $table->string('surveyor');
             $table->string('asuransi');
             $table->string('nopol');
             $table->string('type');
             $table->string('tahun');
+            $table->string('warna');
+            $table->string('norangka');
+            $table->string('nomesin');
             $table->string('nama_tertanggung');
+            $table->string('alamat');
+            $table->string('telp');
             $table->char('status');
             $table->timestamps();
         });

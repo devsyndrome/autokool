@@ -11,7 +11,7 @@ Estimasi
     integrity="sha256-pODNVtK3uOhL8FUNWWvFQK0QoQoV3YA9wGGng6mbZ0E=" crossorigin="anonymous" />
 @endpush
 @section('username')
-Admin
+{{ Auth::user()->name }}
 @endsection
 @section('judul')
 <h1>Jasa </h1>
@@ -61,7 +61,16 @@ Admin
                     <tr>
                         <th>Status</th>
                         <th>:</th>
-                        <th><span class="badge badge-success">{{ $estimates->status }}</span></th>
+                        <th>
+                            @if ($estimates->status == "Estimates")
+                                <span class="badge badge-success">{{ $estimates->status }}</span>
+                            @elseif (($estimates->status == "Logistik"))
+                            <span class="badge badge-warning">{{ $estimates->status }}</span>
+                            @else
+                            <span class="badge badge-info">{{ $estimates->status }}</span>
+                            @endif
+                            
+                        </th>
                     </tr>
                 </table>
                 <hr>
@@ -112,7 +121,7 @@ Admin
     <!-- AKHIR MODAL -->
 
     <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-    <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
+    <div class="modal fade" id="tambah-edit-modal-jasa" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-header">
@@ -120,7 +129,7 @@ Admin
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <form id="form-tambah-edit" name="form-tambah-edit" class="form-horizontal">
+                    <form id="form-tambah-edit-jasa" name="form-tambah-edit-jasa" class="form-horizontal">
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
@@ -243,7 +252,7 @@ Admin
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Tambah Data Jasa"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
         });
 
@@ -291,7 +300,7 @@ Admin
             $("#id").attr('readonly', true)
             var data_id = $(this).data('id');
             $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("Edit Spare Part");
+                $('#modal-judul').html("Edit Jasa");
                 $('#tombol-simpan').val("edit-post");
                 $('#tambah-edit-modal').modal('show');
 
