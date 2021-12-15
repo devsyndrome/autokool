@@ -91,7 +91,7 @@ Kelola Data
                             <div class="col-sm-12">
 
 
-                                <input type="text" name="id" id="id">
+                                <input type="hidden" name="id" id="id">
                                 <div class="form-group">
                                     <label for="name" class="col-sm-12 control-label">Name</label>
                                     <div class="col-sm-12">
