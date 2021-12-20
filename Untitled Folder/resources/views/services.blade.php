@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Logistik
+Estimasi
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -26,7 +26,7 @@ Logistik
 @endsection
 @section('content')
 <h2 class="section-title">Jasa</h2>
-<p class="section-lead">Data HPP Jasa</p>
+<p class="section-lead">Data Estimasi Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -51,11 +51,6 @@ Logistik
                     <tr>
                         <th>Type</th>
                         <th>:</th>
-                        <th>{{ $estimates->type }}</th>
-                    </tr>
-                    <tr>
-                        <th>Tahun</th>
-                        <th>:</th>
                         <th>{{ $estimates->tahun }}</th>
                     </tr>
                     <tr>
@@ -79,6 +74,9 @@ Logistik
                     </tr>
                 </table>
                 <hr>
+                <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
+                        Data</i></a>
+                <hr>
                 <table id="users-table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -87,12 +85,6 @@ Logistik
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
                             <th>Subtotal(ppn)</th>
-                            <th>Pricelist(dpp)</th>
-                            <th>Diskon</th>
-                            <th>Netto(dpp)</th>
-                            <th>Subtotal(dpp)</th>
-                            <th>Markup(%)</th>
-                            <th>After Markup(ppn)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -128,8 +120,8 @@ Logistik
 
     <!-- AKHIR MODAL -->
 
-     <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-     <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
+    <!-- MULAI MODAL FORM TAMBAH/EDIT-->
+    <div class="modal fade" id="tambah-edit-modal-jasa" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-header">
@@ -137,26 +129,37 @@ Logistik
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <form id="form-tambah-edit" name="form-tambah-edit" class="form-horizontal">
+                    <form id="form-tambah-edit-jasa" name="form-tambah-edit-jasa" class="form-horizontal">
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
                                 <input type="hidden" name="id" id="id">
-                                <input type="hidden" name="jenis" id="jenis" value="jasa">
                                 <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
+                                    <label for="jasa" class="col-sm-12 control-label">Jasa</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="diskon_dpp" name="diskon_dpp" min="0" value=""
+                                        <input type="text" class="form-control" id="jasa" name="jasa" value="" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="note" class="col-sm-12 control-label">Note</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control" id="note" name="note" value=""
                                             required>
                                     </div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Mark Up(%)</label>
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Qty</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="markup" name="markup" min="0" value=""
+                                        <input type="number" class="form-control" id="qty" name="qty" min="0" value=""
                                             required>
                                     </div>
-                                </div> --}}
+                                </div>
+                                <div class="form-group">
+                                    <label for="pricelist" class="col-sm-12 control-label">Price List</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" class="form-control" id="price_s" name="price_s" min="0" value="" required>
+                                    </div>
+                                </div>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
                                         value="create">Submit
@@ -200,9 +203,8 @@ Logistik
             $('#users-table').DataTable({
                 processing: true,
                 serverside: true,
-                "scrollX": true,
                 ajax: {
-                    url:"{{ url('logistik') }}" + '/jasa/' + id,
+                    url:"{{ url('estimasi') }}" + '/jasa/' + id,
                     // url:"{{ url('part') }}",
                     type: 'GET'
                 },
@@ -233,48 +235,6 @@ Logistik
                         }
                     },
                     {
-                        data: 'price_dpp',
-                        name: 'price_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_dpp);
-                        }
-                    },
-                    {
-                        data: 'diskon_dpp_s',
-                        name: 'diskon',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.diskon_dpp_s);
-                        }
-                    },
-                    {
-                        data: 'netto',
-                        name: 'netto',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.netto);
-                        }
-                    },
-                    {
-                        data: 'subtotal_dpp',
-                        name: 'subtotal_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal_dpp);
-                        }
-                    },
-                    {
-                        data: 'markup_s',
-                        name: 'markup_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.markup_s);
-                        }
-                    },
-                    {
-                        data: 'after',
-                        name: 'after',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.after);
-                        }
-                    },
-                    {
                         data: 'action',
                         name: 'action'
                     },
@@ -292,7 +252,7 @@ Logistik
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Tambah Data Jasa"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
         });
 
@@ -308,7 +268,7 @@ Logistik
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('logistik.store') }}", //url simpan data
+                        url: "{{ route('jasa.store') }}", //url simpan data
                         type: "POST", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
@@ -340,7 +300,7 @@ Logistik
             $("#id").attr('readonly', true)
             var data_id = $(this).data('id');
             $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("HPP");
+                $('#modal-judul').html("Edit Jasa");
                 $('#tombol-simpan').val("edit-post");
                 $('#tambah-edit-modal').modal('show');
 
@@ -350,8 +310,6 @@ Logistik
                 $('#note').val(data.note);
                 $('#qty').val(data.qty);
                 $('#price_s').val(data.price_s);
-                $('#diskon_dpp').val(data.diskon_dpp_s);
-                $('#markup').val(data.markup_s);
             })
         });
 

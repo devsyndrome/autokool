@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Logistik
+User
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -14,7 +14,7 @@ Logistik
 {{ Auth::user()->name }}
 @endsection
 @section('judul')
-<h1>Jasa </h1>
+<h1>User</h1>
 <div class="section-header-breadcrumb">
     <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
     <div class="breadcrumb-item"><a href="#">Forms</a></div>
@@ -22,77 +22,26 @@ Logistik
 </div>
 @endsection
 @section('section-header')
-{{ $estimates->nopol }}
+Kelola Data
 @endsection
 @section('content')
-<h2 class="section-title">Jasa</h2>
-<p class="section-lead">Data HPP Jasa</p>
+<h2 class="section-title">User</h2>
+<p class="section-lead">Data Pengguna Aplikasi</p>
 
 <div class="section-body">
     <div class="section-body">
+       
         <div class="card">
             <div class="card-body">
-                <table>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>:</th>
-                        <th>{{ $estimates->tgl }}</th>
-                    </tr>
-                    <tr>
-                        <th>Asuransi</th>
-                        <th>:</th>
-                        <th>{{ $estimates->asuransi }}</th>
-                    </tr>
-                    <tr>
-                        <th>No. Pol</th>
-                        <th>:</th>
-                        <th>{{ $estimates->nopol }}</th>
-                    </tr>
-                    <tr>
-                        <th>Type</th>
-                        <th>:</th>
-                        <th>{{ $estimates->type }}</th>
-                    </tr>
-                    <tr>
-                        <th>Tahun</th>
-                        <th>:</th>
-                        <th>{{ $estimates->tahun }}</th>
-                    </tr>
-                    <tr>
-                        <th>Nama</th>
-                        <th>:</th>
-                        <th>{{ $estimates->nama_tertanggung }}</th>
-                    </tr>
-                    <tr>
-                        <th>Status</th>
-                        <th>:</th>
-                        <th>
-                            @if ($estimates->status == "Estimates")
-                                <span class="badge badge-success">{{ $estimates->status }}</span>
-                            @elseif (($estimates->status == "Logistik"))
-                            <span class="badge badge-warning">{{ $estimates->status }}</span>
-                            @else
-                            <span class="badge badge-info">{{ $estimates->status }}</span>
-                            @endif
-                            
-                        </th>
-                    </tr>
-                </table>
+                <a href="javascript:void(0)" class="btn btn-info" id="tombol-tambah"><i class="far fa-edit">Tambah
+                        Data</i></a>
                 <hr>
                 <table id="users-table" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Jasa</th>
-                            <th>Note</th>
-                            <th>QTY</th>
-                            <th>Pricelist(ppn)</th>
-                            <th>Subtotal(ppn)</th>
-                            <th>Pricelist(dpp)</th>
-                            <th>Diskon</th>
-                            <th>Netto(dpp)</th>
-                            <th>Subtotal(dpp)</th>
-                            <th>Markup(%)</th>
-                            <th>After Markup(ppn)</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -115,8 +64,8 @@ Logistik
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p><b>Yakin ingin hapus data?</b></p>
-                    <p>*Data akan terhapus oleh sistem, pastikan data yang dipilih benar.</p>
+                    <p><b>Do you want to delete</b></p>
+                    <p>*data will be deleted forever, are you sure?</p>
                 </div>
                 <div class="modal-footer bg-whitesmoke br">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -128,8 +77,8 @@ Logistik
 
     <!-- AKHIR MODAL -->
 
-     <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-     <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
+    <!-- MULAI MODAL FORM TAMBAH/EDIT-->
+    <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-header">
@@ -140,29 +89,102 @@ Logistik
                     <form id="form-tambah-edit" name="form-tambah-edit" class="form-horizontal">
                         <div class="row">
                             <div class="col-sm-12">
-                                <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
+
+
                                 <input type="hidden" name="id" id="id">
-                                <input type="hidden" name="jenis" id="jenis" value="jasa">
                                 <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
+                                    <label for="name" class="col-sm-12 control-label">Name</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="diskon_dpp" name="diskon_dpp" min="0" value=""
-                                            required>
+                                        <input id="name" type="text"
+                                            class="form-control @error('name') is-invalid @enderror" name="name"
+                                            value="" required autocomplete="name" autofocus>
+                                        @error('name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
                                     </div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Mark Up(%)</label>
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-12 control-label">Email</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="markup" name="markup" min="0" value=""
-                                            required>
+                                        <input id="email" type="email"
+                                            class="form-control @error('email') is-invalid @enderror" name="email"
+                                            value="" required autocomplete="email">
+                                        @error('email')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
                                     </div>
-                                </div> --}}
-                                <div class="col-sm-offset-2 col-sm-12">
-                                    <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
-                                        value="create">Submit
-                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-12 control-label">Password</label>
+                                    <div class="col-sm-12">
+                                        <input id="password" type="password"
+                                            class="form-control @error('password') is-invalid @enderror" name="password"
+                                            required autocomplete="new-password">
+
+                                        @error('password')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                @error('class_name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-12 control-label">Akses Halaman</label>
+                                <div class="col-sm-12">
+                                    <div class="selectgroup selectgroup-pills">
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="user" id="user" value="1"  class="selectgroup-input">
+                                          <span class="selectgroup-button">User</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="estimasi" id="estimasi" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Estimasi</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="spk" id="spk" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">SPK</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="logistik" id="logistik" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">HPP & Markup</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="penawaran" id="penawaran" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Penawaran</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="penawaranhpp" id="penawaranhpp" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">Penawaran vs HPP</span>
+                                        </label>
+                                        <label class="selectgroup-item">
+                                          <input type="checkbox" name="spkhpp" id="spkhpp" value="1" class="selectgroup-input">
+                                          <span class="selectgroup-button">SPK vs HPP</span>
+                                        </label>
+                                      </div>
                                 </div>
                             </div>
+                            @error('class_name')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                            <div class="col-sm-offset-2 col-sm-12">
+                                <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
+                                    value="create">Submit
+                                </button>
+                            </div>
+                        </div>
 
                     </form>
                 </div>
@@ -196,89 +218,29 @@ Logistik
         });
         //READ - Tampil Data
         $(document).ready(function () {
-            var id= $("input[name=id_e]").val();
             $('#users-table').DataTable({
                 processing: true,
                 serverside: true,
-                "scrollX": true,
                 ajax: {
-                    url:"{{ url('logistik') }}" + '/jasa/' + id,
-                    // url:"{{ url('part') }}",
+                    url: "{{route('user.index')}}",
                     type: 'GET'
                 },
                 columns: [{
-                        data: 'jasa',
-                        name: 'jasa'
+                        data: 'id',
+                        name: 'id'
                     },
                     {
-                        data: 'note',
-                        name: 'note'
+                        data: 'name',
+                        name: 'name'
                     },
                     {
-                        data: 'qty',
-                        name: 'qty'
-                    },
-                    {
-                        data: 'price_s',
-                        name: 'price_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_s);
-                        }
-                    },
-                    {
-                        data: 'subtotal',
-                        name: 'subtotal',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal);
-                        }
-                    },
-                    {
-                        data: 'price_dpp',
-                        name: 'price_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_dpp);
-                        }
-                    },
-                    {
-                        data: 'diskon_dpp_s',
-                        name: 'diskon',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.diskon_dpp_s);
-                        }
-                    },
-                    {
-                        data: 'netto',
-                        name: 'netto',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.netto);
-                        }
-                    },
-                    {
-                        data: 'subtotal_dpp',
-                        name: 'subtotal_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal_dpp);
-                        }
-                    },
-                    {
-                        data: 'markup_s',
-                        name: 'markup_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.markup_s);
-                        }
-                    },
-                    {
-                        data: 'after',
-                        name: 'after',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.after);
-                        }
+                        data: 'email',
+                        name: 'email'
                     },
                     {
                         data: 'action',
                         name: 'action'
                     },
-
                 ],
                 order: [
                     [0, 'asc']
@@ -292,8 +254,10 @@ Logistik
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Tambah Pengguna"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
+            $('#email').attr('readonly', false)
+            
         });
 
         //SIMPAN & UPDATE DATA DAN VALIDASI (SISI CLIENT)
@@ -308,7 +272,7 @@ Logistik
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('logistik.store') }}", //url simpan data
+                        url: "{{ route('user.store') }}", //url simpan data
                         type: "POST", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
@@ -339,19 +303,52 @@ Logistik
         $('body').on('click', '.edit-post', function () {
             $("#id").attr('readonly', true)
             var data_id = $(this).data('id');
-            $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("HPP");
+            $.get('user/' + data_id + '/edit', function (data) {
+                $('#modal-judul').html("Edit Pengguna");
                 $('#tombol-simpan').val("edit-post");
                 $('#tambah-edit-modal').modal('show');
 
                 //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-                $('#id').val(data.id_services);
-                $('#jasa').val(data.jasa);
-                $('#note').val(data.note);
-                $('#qty').val(data.qty);
-                $('#price_s').val(data.price_s);
-                $('#diskon_dpp').val(data.diskon_dpp_s);
-                $('#markup').val(data.markup_s);
+                $('#id').val(data.id_user);
+                $('#name').val(data.name);
+                $('#password').val('');
+                $('#email').val(data.email).attr('readonly', true);
+                // $('#password').val(data.password);
+                if(data.user == 1){
+                    $('#user').prop('checked', true);
+                }else{
+                    $('#user').prop('checked', false);
+                }
+                if(data.estimasi == 1){
+                    $('#estimasi').prop('checked', true);
+                }else{
+                    $('#estimasi').prop('checked', false);
+                }
+                if(data.spk == 1){
+                    $('#spk').prop('checked', true);
+                }else{
+                    $('#spk').prop('checked', false);
+                }
+                if(data.logistik == 1){
+                    $('#logistik').prop('checked', true);
+                }else{
+                    $('#logistik').prop('checked', false);
+                }
+                if(data.penawaran == 1){
+                    $('#penawaran').prop('checked', true);
+                }else{
+                    $('#penawaran').prop('checked', false);
+                }
+                if(data.penawaranhpp == 1){
+                    $('#penawaranhpp').prop('checked', true);
+                }else{
+                    $('#penawaranhpp').prop('checked', false);
+                }
+                if(data.spkhpp == 1){
+                    $('#spkhpp').prop('checked', true);
+                }else{
+                    $('#spkhpp').prop('checked', false);
+                }
             })
         });
 
@@ -365,7 +362,38 @@ Logistik
         $('#tombol-hapus').click(function () {
             $.ajax({
 
-                url: "../../jasa/" + dataId, //eksekusi ajax ke url ini
+                url: "lecturers/" + dataId, //eksekusi ajax ke url ini
+                type: 'delete',
+                beforeSend: function () {
+                    $('#tombol-hapus').text('Delete'); //set text untuk tombol hapus
+                },
+                success: function (data) { //jika sukses
+                    setTimeout(function () {
+                        $('#konfirmasi-modal').modal('hide'); //sembunyikan konfirmasi modal
+                        $('#lecturers-table').DataTable().ajax.reload();
+                        // var oTable = $('#table_pegawai').dataTable();
+                        // oTable.fnDraw(false); //reset datatable
+                    });
+                    iziToast.warning({ //tampilkan izitoast warning
+                        title: 'Data deleted',
+                        message: '{{ Session('
+                        delete ')}}',
+                        position: 'bottomRight'
+                    });
+                }
+            })
+        });
+        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
+        $(document).on('click', '.delete', function () {
+            dataId = $(this).attr('id');
+            $('#konfirmasi-modal').modal('show');
+        });
+
+        //jika tombol hapus pada modal konfirmasi di klik maka
+        $('#tombol-hapus').click(function () {
+            $.ajax({
+
+                url: "user/" + dataId, //eksekusi ajax ke url ini
                 type: 'delete',
                 beforeSend: function () {
                     $('#tombol-hapus').text('Delete'); //set text untuk tombol hapus
@@ -385,11 +413,6 @@ Logistik
                     });
                 }
             })
-        });
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.delete', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal').modal('show');
         });
 
     </script>

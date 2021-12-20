@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Logistik
+Asuransi
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -26,7 +26,7 @@ Logistik
 @endsection
 @section('content')
 <h2 class="section-title">Jasa</h2>
-<p class="section-lead">Data HPP Jasa</p>
+<p class="section-lead">Data SPK Asuransi Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -87,12 +87,9 @@ Logistik
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
                             <th>Subtotal(ppn)</th>
-                            <th>Pricelist(dpp)</th>
                             <th>Diskon</th>
                             <th>Netto(dpp)</th>
                             <th>Subtotal(dpp)</th>
-                            <th>Markup(%)</th>
-                            <th>After Markup(ppn)</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -144,19 +141,26 @@ Logistik
                                 <input type="hidden" name="id" id="id">
                                 <input type="hidden" name="jenis" id="jenis" value="jasa">
                                 <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
+                                    <label for="qty" class="col-sm-12 control-label">Harga Estimasi</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="diskon_dpp" name="diskon_dpp" min="0" value=""
+                                        <input type="number" class="form-control" id="price_s" name="price_s" min="0" value=""
+                                            required disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Harga (SPK Asuransi)</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" class="form-control" id="price" name="price" min="0" value=""
                                             required>
                                     </div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Mark Up(%)</label>
+                                <div class="form-group">
+                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="markup" name="markup" min="0" value=""
+                                        <input type="number" class="form-control" id="diskon" name="diskon" min="0" value=""
                                             required>
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
                                         value="create">Submit
@@ -202,7 +206,7 @@ Logistik
                 serverside: true,
                 "scrollX": true,
                 ajax: {
-                    url:"{{ url('logistik') }}" + '/jasa/' + id,
+                    url:"{{ url('asuransi') }}" + '/jasa/' + id,
                     // url:"{{ url('part') }}",
                     type: 'GET'
                 },
@@ -219,10 +223,10 @@ Logistik
                         name: 'qty'
                     },
                     {
-                        data: 'price_s',
-                        name: 'price_s',
+                        data: 'price_asuransi_s',
+                        name: 'price_asuransi_s',
                         render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_s);
+                            return meta.settings.fnFormatNumber(row.price_asuransi_s);
                         }
                     },
                     {
@@ -233,17 +237,10 @@ Logistik
                         }
                     },
                     {
-                        data: 'price_dpp',
-                        name: 'price_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_dpp);
-                        }
-                    },
-                    {
                         data: 'diskon_dpp_s',
                         name: 'diskon',
                         render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.diskon_dpp_s);
+                            return meta.settings.fnFormatNumber(row.diskon_asuransi_s);
                         }
                     },
                     {
@@ -260,20 +257,7 @@ Logistik
                             return meta.settings.fnFormatNumber(row.subtotal_dpp);
                         }
                     },
-                    {
-                        data: 'markup_s',
-                        name: 'markup_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.markup_s);
-                        }
-                    },
-                    {
-                        data: 'after',
-                        name: 'after',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.after);
-                        }
-                    },
+                    
                     {
                         data: 'action',
                         name: 'action'
@@ -292,7 +276,7 @@ Logistik
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Tambah Data SPK Asuransi"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
         });
 
@@ -308,7 +292,7 @@ Logistik
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('logistik.store') }}", //url simpan data
+                        url: "{{ route('asuransi.store') }}", //url simpan data
                         type: "POST", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
@@ -340,7 +324,7 @@ Logistik
             $("#id").attr('readonly', true)
             var data_id = $(this).data('id');
             $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("HPP");
+                $('#modal-judul').html("SPK Asuransi");
                 $('#tombol-simpan').val("edit-post");
                 $('#tambah-edit-modal').modal('show');
 
@@ -348,9 +332,9 @@ Logistik
                 $('#id').val(data.id_services);
                 $('#jasa').val(data.jasa);
                 $('#note').val(data.note);
-                $('#qty').val(data.qty);
                 $('#price_s').val(data.price_s);
-                $('#diskon_dpp').val(data.diskon_dpp_s);
+                $('#price').val(data.price_asuransi_s);
+                $('#diskon').val(data.diskon_asuransi_s);
                 $('#markup').val(data.markup_s);
             })
         });

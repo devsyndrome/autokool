@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-Logistik
+Penawaran
 @endsection
 @push('link-asset')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -25,8 +25,8 @@ Logistik
 {{ $estimates->nopol }}
 @endsection
 @section('content')
-<h2 class="section-title">Jasa</h2>
-<p class="section-lead">Data HPP Jasa</p>
+<h2 class="section-title">Detail</h2>
+<p class="section-lead">Data Penawaran Sparepart & Jasa</p>
 
 <div class="section-body">
     <div class="section-body">
@@ -78,8 +78,61 @@ Logistik
                         </th>
                     </tr>
                 </table>
+                
                 <hr>
-                <table id="users-table" class="table table-striped table-bordered">
+                @if ($estimates->status == "Penawaran")
+                <a href="javascript:void(0)" class="btn btn-warning" id="tombol-tambah">Konfirmasi</a>
+                <p><pre>*NOTE: Pilih konfirmasi untuk melanjutkan proses ke SPK Asuransi, atau mengembalikan data kebagian terkait jika ada perubahan</pre></p>
+                <hr>
+                @endif
+                <h4><span class="badge badge-dark">Spare Part</span></h4>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>No. Part</th>
+                            <th>Spare Part</th>
+                            <th>QTY</th>
+                            <th>Pricelist(ppn)</th>
+                            <th>Subtotal(ppn)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                        setlocale(LC_MONETARY,"en_ID");
+                        $sum_qty = 0;
+                        $sum_price_p = 0;
+                        $sum_sub_price_p = 0;
+                        $sum_price_dpp = 0;
+                        $sum_netto = 0;
+                        $sum_subtotal_dpp = 0;
+                        $sum_after = 0;    
+                        @endphp
+                        @foreach ($part as $j)
+                        <tr>
+                            <td>{{ $j->nopart }}</td>
+                            <td>{{ $j->sparepart }}</td>
+                            <td>{{ $j->qty }}</td>
+                            <td>{{ "Rp.".number_format($j->after,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($j->after * $j->qty ),0,',','.') }}</td>
+                        </tr>
+                        @php 
+                        $sum_qty += $j->qty;
+                        $sum_price_p += $j->after;
+                        $sum_sub_price_p += $j->after * $j->qty;
+                        @endphp
+                        @endforeach
+                        
+                        <tr>
+                            <th colspan="2">TOTAL</th>
+                            <th>{{ $sum_qty}}</th>
+                            <th>{{ "Rp.".number_format($sum_price_p,0,',','.')}}</th>
+                            <th>{{ "Rp.".number_format($sum_sub_price_p,0,',','.')}}</th>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+                <h4><span class="badge badge-dark">Jasa</span></h4>
+                <table  class="table table-striped table-borderedd">
                     <thead>
                         <tr>
                             <th>Jasa</th>
@@ -87,17 +140,45 @@ Logistik
                             <th>QTY</th>
                             <th>Pricelist(ppn)</th>
                             <th>Subtotal(ppn)</th>
-                            <th>Pricelist(dpp)</th>
-                            <th>Diskon</th>
-                            <th>Netto(dpp)</th>
-                            <th>Subtotal(dpp)</th>
-                            <th>Markup(%)</th>
-                            <th>After Markup(ppn)</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        @php
+                        setlocale(LC_MONETARY,"en_ID");    
+                        $sum_qty = 0;
+                        $sum_price_s = 0;
+                        $sum_sub_price_s = 0;
+                        $sum_price_dpp = 0;
+                        $sum_netto = 0;
+                        $sum_subtotal_dpp = 0;
+                        $sum_after = 0;
+                        @endphp
+                        @foreach ($jasa as $i)
+                        <tr>
+                            <td>{{ $i->jasa }}</td>
+                            <td>{{ $i->note }}</td>
+                            <td>{{ $i->qty }}</td>
+                            <td>{{ "Rp.".number_format($i->after,0,',','.') }}</td>
+                            <td>{{ "Rp.".number_format(($i->after * $i->qty ),0,',','.') }}</td>
+                        </tr>
+                        @php 
+                        $sum_qty += $i->qty;
+                        $sum_price_s += $i->after;
+                        $sum_sub_price_s += $i->after * $i->qty;
+                        @endphp
+                        @endforeach
+                        
+                        <tr>
+                        <th colspan="2">TOTAL</th>
+                        <th>{{ $sum_qty}}</th>
+                        <th>{{ "Rp.".number_format($sum_price_s,0,',','.')}}</th>
+                        <th>{{ "Rp.".number_format($sum_sub_price_s,0,',','.')}}</th>
+                       
+                        
+                    </tr>
+                    </tbody>
                 </table>
-
+                
             </div>
         </div>
     </div>
@@ -128,8 +209,8 @@ Logistik
 
     <!-- AKHIR MODAL -->
 
-     <!-- MULAI MODAL FORM TAMBAH/EDIT-->
-     <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
+    <!-- MULAI MODAL FORM TAMBAH/EDIT-->
+    <div class="modal fade" id="tambah-edit-modal" aria-hidden="true">
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-header">
@@ -141,25 +222,20 @@ Logistik
                         <div class="row">
                             <div class="col-sm-12">
                                 <input type="hidden" id="id_e" name="id_e" value="{{ $id }}">
-                                <input type="hidden" name="id" id="id">
-                                <input type="hidden" name="jenis" id="jenis" value="jasa">
                                 <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Diskon(%)</label>
+                                    <label for="status" class="col-sm-12 control-label">Status</label>
                                     <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="diskon_dpp" name="diskon_dpp" min="0" value=""
-                                            required>
+                                        <select name="status" id="status" class="form-control">
+                                            <option value="Asuransi">Asuransi</option>
+                                            <option value="Estimasi">Estimasi</option>
+                                            <option value="Logistik">Logistik</option>
+                                        </select>
                                     </div>
                                 </div>
-                                {{-- <div class="form-group">
-                                    <label for="qty" class="col-sm-12 control-label">Mark Up(%)</label>
-                                    <div class="col-sm-12">
-                                        <input type="number" class="form-control" id="markup" name="markup" min="0" value=""
-                                            required>
-                                    </div>
-                                </div> --}}
+                                <p><pre>Pilih Asuransi untuk melanjutkan proses, jika ada perubahan data kembalikan data ke bagian terkait.</pre></p>
                                 <div class="col-sm-offset-2 col-sm-12">
                                     <button type="submit" class="btn btn-primary btn-block" id="tombol-simpan"
-                                        value="create">Submit
+                                        value="create">Lanjutkan
                                     </button>
                                 </div>
                             </div>
@@ -194,105 +270,15 @@ Logistik
                 }
             });
         });
-        //READ - Tampil Data
-        $(document).ready(function () {
-            var id= $("input[name=id_e]").val();
-            $('#users-table').DataTable({
-                processing: true,
-                serverside: true,
-                "scrollX": true,
-                ajax: {
-                    url:"{{ url('logistik') }}" + '/jasa/' + id,
-                    // url:"{{ url('part') }}",
-                    type: 'GET'
-                },
-                columns: [{
-                        data: 'jasa',
-                        name: 'jasa'
-                    },
-                    {
-                        data: 'note',
-                        name: 'note'
-                    },
-                    {
-                        data: 'qty',
-                        name: 'qty'
-                    },
-                    {
-                        data: 'price_s',
-                        name: 'price_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_s);
-                        }
-                    },
-                    {
-                        data: 'subtotal',
-                        name: 'subtotal',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal);
-                        }
-                    },
-                    {
-                        data: 'price_dpp',
-                        name: 'price_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.price_dpp);
-                        }
-                    },
-                    {
-                        data: 'diskon_dpp_s',
-                        name: 'diskon',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.diskon_dpp_s);
-                        }
-                    },
-                    {
-                        data: 'netto',
-                        name: 'netto',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.netto);
-                        }
-                    },
-                    {
-                        data: 'subtotal_dpp',
-                        name: 'subtotal_dpp',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.subtotal_dpp);
-                        }
-                    },
-                    {
-                        data: 'markup_s',
-                        name: 'markup_s',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.markup_s);
-                        }
-                    },
-                    {
-                        data: 'after',
-                        name: 'after',
-                        render: function (data, type, row, meta) {
-                            return meta.settings.fnFormatNumber(row.after);
-                        }
-                    },
-                    {
-                        data: 'action',
-                        name: 'action'
-                    },
-
-                ],
-                order: [
-                    [0, 'asc']
-                ]
-            });
-        });
-        //TOMBOL TAMBAH DATA
+        
+//TOMBOL TAMBAH DATA
         //jika tombol-tambah diklik maka
         $('#tombol-tambah').click(function () {
             $("#id").attr('readonly', false)
             $('#button-simpan').val("create-post"); //valuenya menjadi create-post
             $('#id').val(''); //valuenya menjadi kosong
             $('#form-tambah-edit').trigger("reset"); //mereset semua input dll didalamnya
-            $('#modal-judul').html("Tambah Data Estimasi"); //valuenya tambah pegawai baru
+            $('#modal-judul').html("Konfirmasi"); //valuenya tambah pegawai baru
             $('#tambah-edit-modal').modal('show'); //modal tampil
         });
 
@@ -308,8 +294,8 @@ Logistik
                     $.ajax({
                         data: $('#form-tambah-edit')
                             .serialize(), //function yang dipakai agar value pada form-control seperti input, textarea, select dll dapat digunakan pada URL query string ketika melakukan ajax request
-                        url: "{{ route('logistik.store') }}", //url simpan data
-                        type: "POST", //karena simpan kita pakai method POST
+                        url: "{{ route('penawaran.create') }}", //url simpan data
+                        type: "GET", //karena simpan kita pakai method POST
                         dataType: 'json', //data tipe kita kirim berupa JSON
                         success: function (data) { //jika berhasil 
                             $('#form-tambah-edit').trigger("reset"); //form reset
@@ -324,6 +310,7 @@ Logistik
                                 success ')}}',
                                 position: 'bottomRight'
                             });
+                            location.reload();
                         },
                         error: function (data) { //jika error tampilkan error pada console
                             console.log('Error:', data);
@@ -333,64 +320,5 @@ Logistik
                 }
             })
         }
-
-        //TOMBOL EDIT DATA PER PEGAWAI DAN TAMPIKAN DATA BERDASARKAN ID PEGAWAI KE MODAL
-        //ketika class edit-post yang ada pada tag body di klik maka
-        $('body').on('click', '.edit-post', function () {
-            $("#id").attr('readonly', true)
-            var data_id = $(this).data('id');
-            $.get('../../jasa/' + data_id + '/edit', function (data) {
-                $('#modal-judul').html("HPP");
-                $('#tombol-simpan').val("edit-post");
-                $('#tambah-edit-modal').modal('show');
-
-                //set value masing-masing id berdasarkan data yg diperoleh dari ajax get request diatas               
-                $('#id').val(data.id_services);
-                $('#jasa').val(data.jasa);
-                $('#note').val(data.note);
-                $('#qty').val(data.qty);
-                $('#price_s').val(data.price_s);
-                $('#diskon_dpp').val(data.diskon_dpp_s);
-                $('#markup').val(data.markup_s);
-            })
-        });
-
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.delete', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal').modal('show');
-        });
-
-        //jika tombol hapus pada modal konfirmasi di klik maka
-        $('#tombol-hapus').click(function () {
-            $.ajax({
-
-                url: "../../jasa/" + dataId, //eksekusi ajax ke url ini
-                type: 'delete',
-                beforeSend: function () {
-                    $('#tombol-hapus').text('Delete'); //set text untuk tombol hapus
-                },
-                success: function (data) { //jika sukses
-                    setTimeout(function () {
-                        $('#konfirmasi-modal').modal('hide'); //sembunyikan konfirmasi modal
-                        $('#users-table').DataTable().ajax.reload();
-                        // var oTable = $('#table_pegawai').dataTable();
-                        // oTable.fnDraw(false); //reset datatable
-                    });
-                    iziToast.warning({ //tampilkan izitoast warning
-                        title: 'Data deleted',
-                        message: '{{ Session('
-                        delete ')}}',
-                        position: 'bottomRight'
-                    });
-                }
-            })
-        });
-        //jika klik class delete (yang ada pada tombol delete) maka tampilkan modal konfirmasi hapus maka
-        $(document).on('click', '.delete', function () {
-            dataId = $(this).attr('id');
-            $('#konfirmasi-modal').modal('show');
-        });
-
     </script>
     @endpush
